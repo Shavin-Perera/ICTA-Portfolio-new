@@ -108,7 +108,7 @@ export default function HeroCarousel() {
                   >
                     <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-teal-500">
                       {firstWord}
-                    </span>
+                    </span><br />
                     <span className="text-white font-medium">
                       {remainingText}
                     </span>
