@@ -13,8 +13,8 @@ export default function ContactPage() {
     {
       icon: Mail,
       title: "Email",
-      content: "mshavinperera@gmail.com",
-      link: "mailto:mshavinperera@gmail.com",
+      content: "rmshavinperera@gmail.com",
+      link: "mailto:rmshavinperera@gmail.com",
     },
     {
       icon: Phone,

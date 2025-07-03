@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
     const testIp = process.env.NODE_ENV === 'development' ? '&ip=8.8.8.8' : '';
     
     // Build API URL with client IP
-    const apiUrl = `https://api.ipgeolocation.io/ipgeo?apiKey=${apiKey}${realClientIp ? `&ip=${realClientIp}` : testIp}`;
+    //const apiUrl = `https://api.ipgeolocation.io/ipgeo?apiKey=${apiKey}${realClientIp ? `&ip=${realClientIp}` : testIp}`;
     
      const response = await fetch("https://api.ipgeolocation.io/ipgeo?apiKey=6cc039e652104acf89d8b1ecb6d3e9cf");
     

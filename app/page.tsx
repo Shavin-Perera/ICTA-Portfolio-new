@@ -8,7 +8,7 @@ import Footer from "@/components/footer"
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen">
       <Navbar />
       <main>
         <HeroCarousel />
