@@ -1,8 +1,31 @@
+'use client';
+
 import Footer from "@/components/footer";
 import Navbar from "@/components/navbar";
 import { Code, Settings, Palette, Brain, MoveRight, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function ServicesPage() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userData, setUserData] = useState<{firstName: string; lastName: string; email: string} | null>(null);
+  const [selectedService, setSelectedService] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  const { toast } = useToast();
+
   const services = [
     {
       icon: Code,
@@ -64,9 +87,104 @@ export default function ServicesPage() {
     },
   ];
 
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        setIsLoggedIn(false);
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/user', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUserData({
+            firstName: data.firstName,
+            lastName: data.lastName,
+            email: data.email
+          });
+          setIsLoggedIn(true);
+        } else {
+          localStorage.removeItem('authToken');
+        }
+      } catch (error) {
+        console.error('Error checking auth status:', error);
+      }
+    };
+
+    checkAuthStatus();
+  }, []);
+
+  const handleGetQuote = (serviceTitle: string) => {
+    if (!isLoggedIn) {
+      router.push('/login');
+      return;
+    }
+
+    setSelectedService(serviceTitle);
+    setFormData({
+      name: `${userData?.firstName} ${userData?.lastName}`,
+      email: userData?.email || "",
+      subject: `Quote Request for ${serviceTitle}`,
+      message: `I'm interested in getting a quote for your ${serviceTitle} service. Please provide more details.`,
+    });
+    setIsDialogOpen(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to submit quote request');
+      }
+
+      toast({
+        title: "Success!",
+        description: "Your quote request has been submitted successfully!",
+      });
+
+      setIsDialogOpen(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: (error as Error).message || 'Failed to submit quote request',
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50">
       <Navbar />
+      
       {/* Hero Section */}
       <div className="relative overflow-hidden pt-32 pb-24">
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-r from-purple-300 to-pink-300 rounded-full opacity-20 blur-3xl animate-pulse-slow" />
@@ -74,22 +192,19 @@ export default function ServicesPage() {
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            
             <h1 className="text-5xl md:text-7xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-700">
               Our Services
             </h1>
             <p className="text-xl text-gray-700 max-w-2xl mx-auto mb-10">
               As a multifaceted freelancer, I specialize in delivering end-to-end digital solutions that help businesses grow, streamline operations, and connect with their audience more effectively.
             </p>
-            
           </div>
         </div>
       </div>
 
-      {/* Services Section - Updated to 2 columns */}
+      {/* Services Section */}
       <div className="py-20">
         <div className="container mx-auto px-4">
-          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             {services.map((service, index) => (
               <div 
@@ -111,8 +226,11 @@ export default function ServicesPage() {
                     <p className="text-gray-600 leading-relaxed mb-6">
                       {service.description}
                     </p>
-                    <button className="flex items-center text-blue-600 font-medium group-hover:text-indigo-700 transition-colors duration-300">
-                      Learn more
+                    <button 
+                      onClick={() => handleGetQuote(service.title)}
+                      className="flex items-center text-blue-600 font-medium group-hover:text-indigo-700 transition-colors duration-300"
+                    >
+                      Get a Quote
                       <MoveRight className="ml-2 w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
                     </button>
                   </div>
@@ -123,7 +241,24 @@ export default function ServicesPage() {
         </div>
       </div>
 
-    
+      {/* Stats Section */}
+      <div className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-6xl mx-auto">
+            {stats.map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="flex justify-center mb-4">
+                  <div className="bg-gradient-to-r from-blue-500 to-indigo-500 w-16 h-16 rounded-full flex items-center justify-center text-white">
+                    <stat.icon className="w-8 h-8" />
+                  </div>
+                </div>
+                <div className="text-3xl font-bold text-gray-900 mb-2">{stat.value}</div>
+                <div className="text-gray-600">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
       {/* Process Section */}
       <div className="py-20 bg-gray-50">
@@ -184,6 +319,92 @@ export default function ServicesPage() {
           </div>
         </div>
       </div>
+
+      {/* Quote Request Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-center">
+              Get a Quote for {selectedService}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium mb-1">
+                Name
+              </label>
+              <Input
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                disabled
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium mb-1">
+                Email
+              </label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                disabled
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="subject" className="block text-sm font-medium mb-1">
+                Subject
+              </label>
+              <Input
+                id="subject"
+                name="subject"
+                value={formData.subject}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="message" className="block text-sm font-medium mb-1">
+                Message
+              </label>
+              <Textarea
+                id="message"
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
+                required
+                rows={5}
+              />
+            </div>
+            
+            <div className="flex justify-end gap-2 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Submitting..." : "Submit Request"}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
       <Footer />
     </div>
   );

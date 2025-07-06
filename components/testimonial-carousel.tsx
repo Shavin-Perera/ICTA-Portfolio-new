@@ -2,61 +2,49 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Star, ChevronLeft, ChevronRight, Quote } from "lucide-react"
+import { Star, ChevronLeft, ChevronRight, Quote, Loader2 } from "lucide-react"
 
 export default function TestimonialCarousel() {
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
   const [direction, setDirection] = useState(0)
-
-  const testimonials = [
-    {
-      name: "Sarah Johnson",
-      role: "CEO, Tech Innovations",
-      rating: 5,
-      testimonial:
-        "Exceptional work! The website exceeded our expectations and was delivered on time. The attention to detail and professionalism was outstanding.",
-      color: "from-blue-500 to-cyan-500"
-    },
-    {
-      name: "Michael Chen",
-      role: "Product Director, StartupX",
-      rating: 5,
-      testimonial:
-        "Working with this team was a game-changer for our business. They understood our vision and brought it to life perfectly. Highly recommended!",
-      color: "from-purple-500 to-pink-500"
-    },
-    {
-      name: "Emily Rodriguez",
-      role: "Operations Manager, Global Solutions",
-      rating: 5,
-      testimonial:
-        "The custom software solution has streamlined our operations significantly. The support and communication throughout the project was excellent.",
-      color: "from-amber-500 to-orange-500"
-    },
-    {
-      name: "David Thompson",
-      role: "Marketing Director, EcomPro",
-      rating: 5,
-      testimonial:
-        "Professional, reliable, and incredibly skilled. Our e-commerce platform has seen a 200% increase in conversions since the redesign.",
-      color: "from-emerald-500 to-teal-500"
-    },
-  ]
+  const [testimonials, setTestimonials] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setDirection(1)
-      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)
-    }, 6000)
-    return () => clearInterval(timer)
+    const fetchApprovedReviews = async () => {
+      try {
+        const response = await fetch('/api/reviews?status=approved')
+        if (!response.ok) throw new Error('Failed to fetch reviews')
+        const data = await response.json()
+        setTestimonials(data)
+      } catch (error) {
+        console.error('Error fetching reviews:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchApprovedReviews()
+  }, [])
+
+  useEffect(() => {
+    if (testimonials.length > 0) {
+      const timer = setInterval(() => {
+        setDirection(1)
+        setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)
+      }, 6000)
+      return () => clearInterval(timer)
+    }
   }, [testimonials.length])
 
   const nextTestimonial = () => {
+    if (testimonials.length <= 1) return
     setDirection(1)
     setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)
   }
 
   const prevTestimonial = () => {
+    if (testimonials.length <= 1) return
     setDirection(-1)
     setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length)
   }
@@ -74,6 +62,43 @@ export default function TestimonialCarousel() {
       x: direction > 0 ? -100 : 100,
       opacity: 0,
     }),
+  }
+
+  const getRandomGradient = (index: number) => {
+    const gradients = [
+      "from-blue-500 to-cyan-500",
+      "from-purple-500 to-pink-500",
+      "from-amber-500 to-orange-500",
+      "from-emerald-500 to-teal-500",
+      "from-indigo-500 to-violet-500",
+      "from-rose-500 to-red-500"
+    ]
+    return gradients[index % gradients.length]
+  }
+
+  if (isLoading) {
+    return (
+      <section className="relative py-24 overflow-hidden bg-gradient-to-br from-gray-50 to-indigo-50">
+        <div className="container mx-auto px-4 relative z-10 flex justify-center items-center h-64">
+          <Loader2 className="animate-spin h-12 w-12 text-indigo-600" />
+        </div>
+      </section>
+    )
+  }
+
+  if (testimonials.length === 0) {
+    return (
+      <section className="relative py-24 overflow-hidden bg-gradient-to-br from-gray-50 to-indigo-50">
+        <div className="container mx-auto px-4 relative z-10 text-center">
+          <h2 className="text-4xl md:text-5xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-700">
+            Client Testimonials
+          </h2>
+          <p className="text-xl text-gray-700 max-w-3xl mx-auto">
+            No approved testimonials yet. Check back later!
+          </p>
+        </div>
+      </section>
+    )
   }
 
   return (
@@ -100,18 +125,22 @@ export default function TestimonialCarousel() {
             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 to-indigo-500"></div>
             
             {/* Navigation Buttons */}
-            <button
-              onClick={prevTestimonial}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-gray-700 hover:bg-gray-100 transition-colors z-10"
-            >
-              <ChevronLeft className="h-6 w-6" />
-            </button>
-            <button
-              onClick={nextTestimonial}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-gray-700 hover:bg-gray-100 transition-colors z-10"
-            >
-              <ChevronRight className="h-6 w-6" />
-            </button>
+            {testimonials.length > 1 && (
+              <>
+                <button
+                  onClick={prevTestimonial}
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-gray-700 hover:bg-gray-100 transition-colors z-10"
+                >
+                  <ChevronLeft className="h-6 w-6" />
+                </button>
+                <button
+                  onClick={nextTestimonial}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-gray-700 hover:bg-gray-100 transition-colors z-10"
+                >
+                  <ChevronRight className="h-6 w-6" />
+                </button>
+              </>
+            )}
 
             <AnimatePresence mode="wait" custom={direction} initial={false}>
               <motion.div
@@ -126,7 +155,7 @@ export default function TestimonialCarousel() {
               >
                 <div className="text-center">
                   <div className="flex justify-center mb-6">
-                    <div className={`bg-gradient-to-r ${testimonials[currentTestimonial].color} w-16 h-16 rounded-full flex items-center justify-center`}>
+                    <div className={`bg-gradient-to-r ${getRandomGradient(currentTestimonial)} w-16 h-16 rounded-full flex items-center justify-center`}>
                       <Quote className="w-8 h-8 text-white" />
                     </div>
                   </div>
@@ -138,12 +167,16 @@ export default function TestimonialCarousel() {
                   </div>
 
                   <blockquote className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed max-w-2xl mx-auto">
-                    "{testimonials[currentTestimonial].testimonial}"
+                    "{testimonials[currentTestimonial].reviewText}"
                   </blockquote>
 
                   <div>
-                    <div className="font-bold text-lg text-gray-800">{testimonials[currentTestimonial].name}</div>
-                    <div className="text-gray-500 text-sm">{testimonials[currentTestimonial].role}</div>
+                    <div className="font-bold text-lg text-gray-800">
+                      {testimonials[currentTestimonial].firstName} {testimonials[currentTestimonial].lastName}
+                    </div>
+                    {testimonials[currentTestimonial].role && (
+                      <div className="text-gray-500 text-sm">{testimonials[currentTestimonial].role}</div>
+                    )}
                   </div>
                 </div>
               </motion.div>
@@ -151,22 +184,24 @@ export default function TestimonialCarousel() {
           </div>
 
           {/* Dots Indicator */}
-          <div className="flex justify-center mt-8 space-x-3">
-            {testimonials.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  setDirection(index > currentTestimonial ? 1 : -1)
-                  setCurrentTestimonial(index)
-                }}
-                className={`w-3 h-3 rounded-full transition-all ${
-                  index === currentTestimonial 
-                    ? "bg-gradient-to-r from-blue-500 to-indigo-500 w-8" 
-                    : "bg-gray-300"
-                }`}
-              />
-            ))}
-          </div>
+          {testimonials.length > 1 && (
+            <div className="flex justify-center mt-8 space-x-3">
+              {testimonials.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    setDirection(index > currentTestimonial ? 1 : -1)
+                    setCurrentTestimonial(index)
+                  }}
+                  className={`w-3 h-3 rounded-full transition-all ${
+                    index === currentTestimonial 
+                      ? "bg-gradient-to-r from-blue-500 to-indigo-500 w-8" 
+                      : "bg-gray-300"
+                  }`}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>

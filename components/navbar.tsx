@@ -2,20 +2,55 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Menu, X, ArrowRight } from "lucide-react"
+import { Menu, X, ArrowRight, LogOut } from "lucide-react"
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const router = useRouter()
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10)
     }
     window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
+    
+    // Check if user is logged in
+    const checkAuthStatus = () => {
+      setIsLoading(true)
+      const token = localStorage.getItem('authToken')
+      setIsLoggedIn(!!token)
+      setIsLoading(false)
+    }
+    
+    checkAuthStatus()
+    
+    // Listen for storage events to handle login/logout from other tabs
+    const handleStorageChange = () => {
+      checkAuthStatus()
+    }
+    
+    window.addEventListener('storage', handleStorageChange)
+    
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+      window.removeEventListener('storage', handleStorageChange)
+    }
   }, [])
+
+  const handleLogout = () => {
+    // Clear authentication state
+    localStorage.removeItem('authToken')
+    setIsLoggedIn(false)
+    
+    // Redirect to login page and refresh
+    router.push('/login')
+    router.refresh()
+  }
 
   const navItems = [
     { name: "Home", href: "/" },
@@ -55,16 +90,27 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Login Button - Right side (desktop) */}
+          {/* Auth Button - Right side (desktop) */}
           <div className="hidden md:block">
-            <Button 
-              asChild 
-              className="bg-gradient-to-r from-[#F4E007] to-[#F4E007]/80 hover:from-[#F4E007]/90 hover:to-[#F4E007]/70 text-[#220D54] font-semibold shadow-lg hover:shadow-xl transition-all duration-300 px-6 py-2"
-            >
-              <Link href="/login">
-                Login <ArrowRight className="ml-2 w-4 h-4" />
-              </Link>
-            </Button>
+            {isLoading ? (
+              <div className="h-10 w-20 rounded-md bg-gray-200 animate-pulse"></div>
+            ) : isLoggedIn ? (
+              <Button 
+                onClick={handleLogout}
+                className="bg-gradient-to-r from-[#F4E007] to-[#F4E007]/80 hover:from-[#F4E007]/90 hover:to-[#F4E007]/70 text-[#220D54] font-semibold shadow-lg hover:shadow-xl transition-all duration-300 px-6 py-2"
+              >
+                Logout <LogOut className="ml-2 w-4 h-4" />
+              </Button>
+            ) : (
+              <Button 
+                asChild 
+                className="bg-gradient-to-r from-[#F4E007] to-[#F4E007]/80 hover:from-[#F4E007]/90 hover:to-[#F4E007]/70 text-[#220D54] font-semibold shadow-lg hover:shadow-xl transition-all duration-300 px-6 py-2"
+              >
+                <Link href="/login">
+                  Login <ArrowRight className="ml-2 w-4 h-4" />
+                </Link>
+              </Button>
+            )}
           </div>
 
           {/* Mobile Menu Button - Now on the right side */}
@@ -99,14 +145,26 @@ export default function Navbar() {
                   </Link>
                 ))}
                 <div className="pt-4 px-4">
-                  <Button 
-                    asChild 
-                    className="w-full bg-gradient-to-r from-[#F4E007] to-[#F4E007]/80 hover:from-[#F4E007]/90 hover:to-[#F4E007]/70 text-[#220D54] font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                  >
-                    <Link href="/login" onClick={() => setIsOpen(false)}>
-                      Login <ArrowRight className="ml-2 w-4 h-4" />
-                    </Link>
-                  </Button>
+                  {isLoggedIn ? (
+                    <Button 
+                      onClick={() => {
+                        handleLogout()
+                        setIsOpen(false)
+                      }}
+                      className="w-full bg-gradient-to-r from-[#F4E007] to-[#F4E007]/80 hover:from-[#F4E007]/90 hover:to-[#F4E007]/70 text-[#220D54] font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                    >
+                      Logout <LogOut className="ml-2 w-4 h-4" />
+                    </Button>
+                  ) : (
+                    <Button 
+                      asChild 
+                      className="w-full bg-gradient-to-r from-[#F4E007] to-[#F4E007]/80 hover:from-[#F4E007]/90 hover:to-[#F4E007]/70 text-[#220D54] font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                    >
+                      <Link href="/login" onClick={() => setIsOpen(false)}>
+                        Login <ArrowRight className="ml-2 w-4 h-4" />
+                      </Link>
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
