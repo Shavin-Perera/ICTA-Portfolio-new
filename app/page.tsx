@@ -14,7 +14,7 @@ export default function HomePage() {
       <main>
         <HeroCarousel />
         <IntroStats />
-        <WhyChooseUs />
+        {/* <WhyChooseUs /> */}
         <CTABanner />
         <TestimonialCarousel />
         <ReviewForm />

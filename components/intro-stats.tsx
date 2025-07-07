@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react"
 import { motion } from "framer-motion"
+import Image from "next/image"
 
 export default function IntroStats() {
   const [counts, setCounts] = useState({
@@ -15,7 +16,7 @@ export default function IntroStats() {
   const finalCounts = {
     clients: 150,
     projects: 200,
-    experience: 5,
+    experience: 8,
     countries: 25,
     satisfaction: 98,
   }
@@ -104,17 +105,42 @@ export default function IntroStats() {
       <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-gradient-to-r from-cyan-300 to-blue-300 rounded-full opacity-20 blur-3xl animate-pulse-slow" />
       
       <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-20">
-          <div className="inline-flex items-center bg-gradient-to-r from-blue-500 to-purple-500 text-white text-sm font-medium px-4 py-2 rounded-full mb-6 animate-bounce-slow">
-            <span>Trusted by businesses worldwide</span>
+        <div className="flex flex-col lg:flex-row items-center gap-12 mb-20">
+          {/* Left side - Introduction text */}
+          <div className="lg:w-1/2">
+            
+            <h2 className="text-4xl md:text-5xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-700">
+              Introduction 
+            </h2>
+            <p className="text-xl text-gray-700 mb-8">
+              I'm a passionate full-stack developer dedicated to creating exceptional digital experiences. With years of
+              experience and a commitment to excellence, I help businesses transform their ideas into reality.
+            </p>
+            <div className="inline-flex items-center space-x-4">
+              <button className="px-8 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-full hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl">
+                About Me 
+              </button>
+            </div>
           </div>
-          <h2 className="text-4xl md:text-5xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-700">
-            Our Impact
-          </h2>
-          <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-            I'm a passionate full-stack developer dedicated to creating exceptional digital experiences. With years of
-            experience and a commitment to excellence, I help businesses transform their ideas into reality.
-          </p>
+
+          {/* Right side - Image */}
+          <div className="lg:w-1/2 flex justify-center">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className="relative w-full max-w-md h-96 rounded-2xl overflow-hidden shadow-xl border-4 border-white"
+            >
+              <Image 
+                src="/charith1.jpeg" 
+                alt="Charith - Full Stack Developer"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                priority
+              />
+            </motion.div>
+          </div>
         </div>
 
         <motion.div 
@@ -156,18 +182,6 @@ export default function IntroStats() {
             </motion.div>
           ))}
         </motion.div>
-        
-        {/* Call to action */}
-        <div className="mt-20 text-center">
-          <div className="inline-flex items-center space-x-4">
-            <button className="px-8 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-full hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl">
-              View Our Portfolio
-            </button>
-            <button className="px-8 py-3 bg-white text-gray-800 font-semibold rounded-full border-2 border-blue-500 hover:bg-blue-50 transition-all duration-300">
-              Contact Us
-            </button>
-          </div>
-        </div>
       </div>
     </section>
   )
