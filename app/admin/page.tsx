@@ -4,12 +4,48 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Star, Check, X, Loader2, RefreshCw } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import LoginModal from '@/components/admin/LoginModal';
+
+interface User {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+}
 
 export default function AdminReviewPanel() {
   const [reviews, setReviews] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    const authStatus = localStorage.getItem('adminAuthenticated');
+    const userData = localStorage.getItem('adminUser');
+    
+    if (authStatus === 'true' && userData) {
+      setIsAuthenticated(true);
+      setCurrentUser(JSON.parse(userData));
+      fetchReviews();
+    } else {
+      setShowLoginModal(true);
+    }
+
+    const handleBeforeUnload = () => {
+      localStorage.removeItem('adminAuthenticated');
+      localStorage.removeItem('adminUser');
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
 
   const fetchReviews = async () => {
     setIsLoading(true);
@@ -26,9 +62,41 @@ export default function AdminReviewPanel() {
     }
   };
 
-  useEffect(() => {
-    fetchReviews();
-  }, []);
+  const handleLogin = async (email: string, password: string) => {
+    try {
+      const response = await fetch('/api/admin/auth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) throw new Error('Login failed');
+
+      const { user } = await response.json();
+      
+      setIsAuthenticated(true);
+      setCurrentUser(user);
+      setShowLoginModal(false);
+      localStorage.setItem('adminAuthenticated', 'true');
+      localStorage.setItem('adminUser', JSON.stringify(user));
+      fetchReviews();
+      toast.success('Login successful');
+    } catch (error) {
+      toast.error('Invalid credentials');
+      console.error(error);
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setCurrentUser(null);
+    localStorage.removeItem('adminAuthenticated');
+    localStorage.removeItem('adminUser');
+    setShowLoginModal(true);
+    setReviews([]);
+  };
 
   const handleReviewAction = async (reviewId: string, action: 'approve' | 'reject') => {
     setIsProcessing(true);
@@ -44,7 +112,7 @@ export default function AdminReviewPanel() {
       if (!response.ok) throw new Error(`Failed to ${action} review`);
 
       toast.success(`Review ${action}d successfully`);
-      fetchReviews(); // Refresh the list
+      fetchReviews();
     } catch (error) {
       toast.error(`Error ${action}ing review`);
       console.error(error);
@@ -53,19 +121,45 @@ export default function AdminReviewPanel() {
     }
   };
 
+  if (!isAuthenticated) {
+    return (
+      <LoginModal 
+        isOpen={showLoginModal} 
+        onLogin={handleLogin}
+        onClose={() => router.push('/')}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#220D54] to-[#0D0527] p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
         <header className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-white">Review Management</h1>
-          <Button
-            onClick={fetchReviews}
-            variant="outline"
-            className="bg-transparent text-white hover:bg-white/10 border-white/20"
-          >
-            <RefreshCw className={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-            Refresh
-          </Button>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-white">Review Management</h1>
+            {currentUser && (
+              <p className="text-sm text-white/60">
+                Logged in as: {currentUser.firstName} {currentUser.lastName} ({currentUser.email})
+              </p>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <Button
+              onClick={fetchReviews}
+              variant="outline"
+              className="bg-transparent text-white hover:bg-white/10 border-white/20"
+            >
+              <RefreshCw className={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+            <Button
+              onClick={handleLogout}
+              variant="outline"
+              className="bg-transparent text-white hover:bg-white/10 border-white/20"
+            >
+              Logout
+            </Button>
+          </div>
         </header>
 
         {isLoading ? (

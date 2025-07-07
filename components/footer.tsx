@@ -85,7 +85,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2">
             <h3 className="text-3xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400">
-              INTERNS
+              Charith Kandamulla
             </h3>
             <p className="text-gray-300 mb-6 max-w-md">
               Creating exceptional digital experiences with cutting-edge technology and personalized service.
@@ -258,7 +258,7 @@ export default function Footer() {
         {/* Copyright */}
         <div className="border-t border-gray-800 mt-12 pt-8 text-center">
           <p className="text-gray-500">
-            &copy; {new Date().getFullYear()} INTERNS. All rights reserved.
+            &copy; {new Date().getFullYear()} Charith Kandamulla. All rights reserved.
           </p>
           <div className="mt-4 flex justify-center space-x-6 text-sm text-gray-500">
             <a href="#" className="hover:text-blue-400 transition-colors">Privacy Policy</a>

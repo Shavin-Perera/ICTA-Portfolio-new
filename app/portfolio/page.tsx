@@ -8,9 +8,12 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Navbar from "@/components/navbar";
+import TestimonialCarousel from "@/components/testimonial-carousel";
+import Footer from "@/components/footer";
 
 // Register ChartJS components
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
+
 
 export default function PortfolioPage() {
   const [showFullDescription, setShowFullDescription] = useState(false);
@@ -283,7 +286,7 @@ export default function PortfolioPage() {
               className="bg-white p-6 rounded-2xl text-center shadow-sm hover:shadow-md transition-shadow"
             >
               <h3 className="text-gray-600 text-sm font-medium">Total Projects</h3>
-              <p className="text-3xl font-bold text-gray-800 mt-2">42</p>
+              <p className="text-3xl font-bold text-gray-800 mt-2">200+</p>
             </motion.div>
             
             <motion.div 
@@ -294,7 +297,7 @@ export default function PortfolioPage() {
               className="bg-white p-6 rounded-2xl text-center shadow-sm hover:shadow-md transition-shadow"
             >
               <h3 className="text-gray-600 text-sm font-medium">Happy Clients</h3>
-              <p className="text-3xl font-bold text-gray-800 mt-2">36</p>
+              <p className="text-3xl font-bold text-gray-800 mt-2">150+</p>
             </motion.div>
             
             <motion.div 
@@ -305,43 +308,14 @@ export default function PortfolioPage() {
               className="bg-white p-6 rounded-2xl text-center shadow-sm hover:shadow-md transition-shadow"
             >
               <h3 className="text-gray-600 text-sm font-medium">Years Experience</h3>
-              <p className="text-3xl font-bold text-gray-800 mt-2">5</p>
+              <p className="text-3xl font-bold text-gray-800 mt-2">8</p>
             </motion.div>
           </div>
         </div>
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-700">
-              Client Testimonials
-            </h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mb-8 rounded-full" />
-            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-              What my clients say about working with me
-            </p>
-          </div>
-
-          <div className="max-w-4xl mx-auto">
-            <Slider {...settings}>
-              {reviews.map(review => (
-                <div key={review.id} className="px-4">
-                  <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-                    <blockquote className="text-center">
-                      <p className="text-xl italic text-gray-600">"{review.quote}"</p>
-                      <footer className="mt-4">
-                        <strong className="text-gray-800">{review.author}</strong>, <span className="text-gray-600">{review.role}</span>
-                      </footer>
-                    </blockquote>
-                  </div>
-                </div>
-              ))}
-            </Slider>
-          </div>
-        </div>
-      </section>
+      <TestimonialCarousel />
 
       {/* Features Section */}
       <section className="relative py-24 overflow-hidden bg-gray-50">
@@ -393,6 +367,9 @@ export default function PortfolioPage() {
           </motion.div>
         </div>
       </section>
+
+      {/* Footer Section */}
+      <Footer />
     </div>
   );
 }

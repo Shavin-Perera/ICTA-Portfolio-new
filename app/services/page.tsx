@@ -230,7 +230,7 @@ export default function ServicesPage() {
                       onClick={() => handleGetQuote(service.title)}
                       className="flex items-center text-blue-600 font-medium group-hover:text-indigo-700 transition-colors duration-300"
                     >
-                      Get a Quote
+                      Get connected
                       <MoveRight className="ml-2 w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
                     </button>
                   </div>
@@ -325,7 +325,7 @@ export default function ServicesPage() {
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-center">
-              Get a Quote for {selectedService}
+              Get connected for {selectedService}
             </DialogTitle>
           </DialogHeader>
           
