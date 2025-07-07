@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import Navbar from "@/components/navbar";
 
 // Register ChartJS components
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
@@ -153,6 +154,7 @@ export default function PortfolioPage() {
 
   return (
     <div className="min-h-screen bg-white">
+      <Navbar />
       {/* Hero Section */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
