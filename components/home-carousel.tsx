@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
+import Link from "next/link"
 
 // Region-specific image collections
 const regionImages = {
@@ -40,7 +41,7 @@ default: [
     "https://media.licdn.com/dms/image/v2/D562DAQFEMECQc9dQvw/profile-treasury-image-shrink_800_800/profile-treasury-image-shrink_800_800/0/1726845924983?e=1752552000&v=beta&t=ddQrMoBM8OAFz5TwlrEl9gPLMNVbXhs5zJMTzGt-1fw" // LinkedIn profile image 3
   ]}
 
-export default function HeroCarousel() {
+export default function HomeCarousel() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [region, setRegion] = useState('default')
@@ -128,6 +129,79 @@ export default function HeroCarousel() {
           />
         </div>
       ))}
+
+      {/* Bold Greeting Message */}
+      <div className="absolute inset-0 flex items-center justify-center z-10 px-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+          className="text-center max-w-4xl mx-auto"
+        >
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-orange-500">
+              Hello, I'm Your Expert Software Developer
+            </span>
+          </h1>
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 1 }}
+            className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto"
+          >
+            Crafting high-performance digital solutions tailored to your business needs
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 1.2 }}
+            className="flex gap-4 justify-center"
+          >
+<div className="flex gap-4 justify-center">
+  <Link href="/portfolio" passHref>
+    <motion.button
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.8, delay: 1.2 }}
+      className="px-8 py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold rounded-full hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+    >
+      View My Work
+    </motion.button>
+  </Link>
+  
+  <Link href="/contact" passHref>
+    <motion.button
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.8, delay: 1.3 }}
+      className="px-8 py-3 bg-white/10 text-white font-bold rounded-full backdrop-blur-sm hover:bg-white/20 transition-all duration-300 transform hover:scale-105"
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+    >
+      Contact Me
+    </motion.button>
+  </Link>
+</div>
+          </motion.div>
+        </motion.div>
+      </div>
+
+      {/* Scroll Indicator */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, delay: 1.5 }}
+        className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-10"
+      >
+        <div className="animate-bounce flex flex-col items-center">
+          <p className="text-white/80 text-sm mb-2">Scroll to explore</p>
+          <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center">
+            <div className="w-1 h-2 bg-white/80 rounded-full mt-2 animate-scroll"></div>
+          </div>
+        </div>
+      </motion.div>
     </div>
   )
 }

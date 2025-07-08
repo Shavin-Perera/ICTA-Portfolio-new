@@ -1,5 +1,6 @@
 "use client"
 
+import Link from 'next/link';
 import { useEffect, useState, useRef } from "react"
 import { motion } from "framer-motion"
 import Image from "next/image"
@@ -117,9 +118,15 @@ export default function IntroStats() {
               experience and a commitment to excellence, I help businesses transform their ideas into reality.
             </p>
             <div className="inline-flex items-center space-x-4">
-              <button className="px-8 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-full hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl">
-                About Me 
-              </button>
+<Link href="/about" passHref>
+  <motion.button
+    className="px-8 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-full hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl"
+    whileHover={{ y: -4 }}
+    whileTap={{ scale: 0.98 }}
+  >
+    About Me
+  </motion.button>
+</Link>
             </div>
           </div>
 

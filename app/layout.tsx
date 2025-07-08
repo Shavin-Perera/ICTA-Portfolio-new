@@ -3,8 +3,8 @@ import './globals.css'
 import Chatbot from '../components/chatbot/Chatbot';
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
+  title: 'Charith Kandamulla',
+  description: 'Crafted with Love by Charith Kandamulla',
   generator: 'v0.dev',
 }
 

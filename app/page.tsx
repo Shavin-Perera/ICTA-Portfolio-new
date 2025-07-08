@@ -6,16 +6,17 @@ import CTABanner from "@/components/cta-banner"
 import TestimonialCarousel from "@/components/testimonial-carousel"
 import Footer from "@/components/footer"
 import ReviewForm from "@/components/ReviewForm"
+import HomeCarousel from "@/components/home-carousel"
 
 export default function HomePage() {
   return (
     <div className="min-h-screen">
       <Navbar />
       <main>
-        <HeroCarousel />
+        <HomeCarousel />
         <IntroStats />
         {/* <WhyChooseUs /> */}
-        <CTABanner />
+        {/* <CTABanner /> */}
         <TestimonialCarousel />
         <ReviewForm />
       </main>
